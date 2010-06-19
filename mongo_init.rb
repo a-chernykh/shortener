@@ -1,5 +1,8 @@
 include Mongo
-DB = Connection.new(ENV['DATABASE_URL'] || 'localhost')
-MongoMapper.connection = DB
-DB.authenticate(ENV['DATABASE_USER'], ENV['DATABASE_PASSWORD']) if ENV['DATABASE_USER'] && ENV['DATABASE_PASSWORD']
-MongoMapper.database = @db_name
+
+if ENV['MONGOHQ_URL']
+  MongoMapper.config = {ENV['RACK_ENV'] => {'uri' => ENV['MONGOHQ_URL']}}
+else
+  MongoMapper.config = {ENV['RACK_ENV'] => {'uri' => "mongodb://localhost/#{@db_name}"}}
+end
+MongoMapper.connect(ENV['RACK_ENV'])
